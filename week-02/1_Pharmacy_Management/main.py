@@ -10,6 +10,7 @@ class Drug:
 
 class Pharmacy:
     def __init__(self, name: str):
+        self.name = name
         self.drugs = []
         self.employees = []
 
@@ -24,12 +25,14 @@ class Pharmacy:
         })
 
     def total_value(self) -> int:
+        total = 0
         for drug in self.drugs:
             value = drug.amount * drug.price
             total += value
         return total
 
     def employees_summary(self) -> str:
-        print("Employees:\n")
-        for i in range(self.employee):
-            return print("\nThe employee number {i} is {first_name} {last_name} who is {age} years old.")
+        summary = "Employees:\n"
+        for i, emp in enumerate(self.employees, 1):  # دو نقطه و عدد 1 اضافه شد
+            summary += f"The employee number {i} is {emp['first_name']} {emp['last_name']} who is {emp['age']} years old.\n"
+        return summary
