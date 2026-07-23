@@ -1,0 +1,6 @@
+class ExceptionProxy(Exception):
+    ...
+
+
+def transform_exceptions(func_ls: list) -> list[ExceptionProxy]:
+    ...
