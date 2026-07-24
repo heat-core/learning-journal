@@ -10,11 +10,22 @@ class Consts:
 
 
 class WorkPlace:
+    instances = []
+
     def __init__(self, name: str) -> None:
-        ...
+        self.name = name
+        self.level = 1
+        self.expertise = ""
+        self.employees = []
+        self.capacity = 1
+        WorkPlace.instances.append(self)
+
+
+
+
 
     def get_price(self) -> int:
-        ...
+        return Consts.BASE_PRICE[self.expertise]
 
     def calc_costs(self):
         pass
@@ -23,18 +34,30 @@ class WorkPlace:
         pass
 
     def upgrade(self) -> None:
-        ...
+        self.level += 1
+        self.calc_capacity()
+
+
 
     def hire(self, person) -> None:
-        ...
+        if len(self.employees) >= self.capacity:
+            raise WorkPlaceIsFull()
+        else:
+            self.employees.append(person)
+            person.work_place = self
 
     def get_expertise(self) -> str:
-        ...
+        return self.expertise
+
+
 
     def calc(self) -> int:
-        ...
+        return -self.calc_costs()
 
     @staticmethod
     def calc_all() -> int:
-        ...
+        result = 0
+        for workplace in WorkPlace.instances:
+            result += workplace.calc()
+        return result
 
