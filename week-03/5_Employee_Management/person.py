@@ -1,5 +1,6 @@
 import math
 
+
 class Consts:
     BASE_PRICE = {'worker': 1200, 'teacher': 1500, 'engineer': 2000}
     BASE_COST = {'worker': 200, 'teacher': 150, 'engineer': 300}
@@ -11,26 +12,46 @@ class Person:
     instances = []
 
     def __init__(self, name: str, age: int) -> None:
-        ...
+        self.name = name
+        self.age = age
+        self.job = ""
+        self.level = 1
+        self.work_place = None
+        Person.instances.append(self)
+
 
     def do_level(self, income: int) -> float:
-        ...
+        return income * math.sqrt(self.level * self.work_place.level)
 
     def calc_income(self):
         pass
 
+
     def calc_life_cost(self):
         pass
 
+
     def calc(self) -> float:
-        ...
+        base_income = self.calc_income()
+        life_cost = self.calc_life_cost()
+        adjusted_income = self.do_level(base_income)
+        return adjusted_income - life_cost
+
+
 
     def get_job(self) -> str:
-        ...
+
+        return self.job
+
 
     def upgrade(self) -> None:
-        ...
+        self.level += 1
+
 
     @staticmethod
     def calc_all() -> float:
-        ...
+        result = 0
+        for person in Person.instances:
+            result += person.calc()
+        return result
+
