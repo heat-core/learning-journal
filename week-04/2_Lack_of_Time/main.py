@@ -1,7 +1,6 @@
 from threading import Thread
 import time
 
-
 def grow_plants(duration):
     time.sleep(duration)
     print("The plants are grown!")
@@ -20,7 +19,10 @@ def cook_meal(duration):
 def run_sequential(durations):
     start_time = time.time()
 
-    # TODO: برنامه را طوری تکمیل کنید که توابع بالا به‌طور متوالی اجرا شوند.
+    grow_plants(durations[0])
+    listen_to_music(durations[1])
+    cook_meal(durations[2])
+
 
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -31,7 +33,15 @@ def run_sequential(durations):
 def run_threaded(durations):
     start_time = time.time()
 
-    # TODO: برنامه را طوری تکمیل کنید که زمان اجرا کمتر شود.
+    t4 = Thread(target=grow_plants, args=(durations[0],))
+    t5 = Thread(target=listen_to_music, args=(durations[1],))
+    t6 = Thread(target=cook_meal, args=(durations[2],))
+    t4.start()
+    t5.start()
+    t6.start()
+    t4.join()
+    t5.join()
+    t6.join()
 
     end_time = time.time()
     elapsed_time = end_time - start_time
