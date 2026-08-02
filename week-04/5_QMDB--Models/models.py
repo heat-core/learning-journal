@@ -8,16 +8,54 @@ class Base(DeclarativeBase):
     pass
 
 class MovieGenre(Base):
-    pass
+    __tablename__ = "movie_genres"
+    movie_id: Mapped[int] = mapped_column(foreign_key=("movies.id"), primary_key=True)
+    genre_id: Mapped[int] = mapped_column(ForeignKey("genres.id"), primary_key=True)
 
 class Movie(Base):
-    pass
+    __tablename__ = "movies"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(String)
+    release_year: Mapped[[int] = mapped_column(nullable=True)
+    genres: Mapped[List["Genre"]] = relationship(secondary="movie_genres", back_populates="movies")
+    reviews: Mapped[List["Review"]] = relationship(back_populates="movie")
+
 
 class User(Base):
-    pass
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String)
+    email: Mapped[str] = mapped_column(String, unique=True)
+    is_verified: Mapped[bool] = mapped_column(default=False)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+
+    # ارتباط‌ها
+    reviews: Mapped[List["Review"]] = relationship(back_populates="user")
+
 
 class Genre(Base):
-    pass
+    __tablename__ = "genres"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String, unique=True)
+
+    # ارتباط‌ها
+    movies: Mapped[List["Movie"]] = relationship(secondary="movie_genres", back_populates="genres")
+
 
 class Review(Base):
-    pass
+    __tablename__ = "reviews"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    movie_id: Mapped[int] = mapped_column(ForeignKey("movies.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    rating: Mapped[int] = mapped_column()
+    comment: Mapped[str] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated_at: Mapped[datetime] = mapped_column(default=datetime.now, onupdate=datetime.now)
+
+    # ارتباط‌ها
+    movie: Mapped["Movie"] = relationship(back_populates="reviews")
+    user: Mapped["User"] = relationship(back_populates="reviews")
