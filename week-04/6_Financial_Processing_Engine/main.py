@@ -1,48 +1,40 @@
 import threading
+import time
 from core.models import BankAccount
 
 
-def worker_deposit(account: BankAccount, amount: float, count: int):
-    """تابعی که توسط هر ترد اجرا می‌شود و چندین بار واریز انجام می‌دهد"""
-    for _ in range(count):
-        account.deposit(amount)
+def monitor_account(account: BankAccount):
+    """ترد ناظر که معطل می‌ماند تا سیگنال Event صادر شود"""
+    print("[MONITOR] Waiting for account balance to reach target threshold...")
+    # متوقف شدن ترد بدون مصرف CPU تا زمان فراخوانی event.set()
+    account.balance_event.wait()
+    print(f"[MONITOR] ALERT: Target reached! Current Balance: {account.balance}")
+
+
+def depositor(account: BankAccount):
+    """تردی که آرام‌آرام پول واریز می‌کند"""
+    for i in range(3):
+        time.sleep(1)  # شبیه‌سازی وقفه بین واریزها
+        print(f"\n[DEPOSITOR] Deposit step {i+1}...")
+        account.deposit(2000.0)
 
 
 def main():
-    print("=== Testing Concurrent Transactions (Thread-Safety) ===")
+    print("=== Testing Thread Synchronization with Event ===")
     account = BankAccount("101", "Farbod", initial_balance=0.0)
 
-    threads = []
-    num_threads = 100
-    deposits_per_thread = 10
-    amount_per_deposit = 10.0
+    # ساخت و شروع ترد ناظر
+    t_monitor = threading.Thread(target=monitor_account, args=(account,))
+    t_monitor.start()
 
-    # ساخت ۱۰۰ ترد هم‌زمان
-    for _ in range(num_threads):
-        t = threading.Thread(
-            target=worker_deposit,
-            args=(account, amount_per_deposit, deposits_per_thread)
-        )
-        threads.append(t)
+    # ساخت و شروع ترد واریزکننده
+    t_depositor = threading.Thread(target=depositor, args=(account,))
+    t_depositor.start()
 
-    # شروع کار تردها
-    for t in threads:
-        t.start()
+    t_monitor.join()
+    t_depositor.join()
 
-    # انتظار برای پایان کار تمام تردها
-    for t in threads:
-        t.join()
-
-    expected_balance = num_threads * deposits_per_thread * amount_per_deposit
-    print("\n==========================================")
-    print(f"Expected Final Balance: {expected_balance}")
-    print(f"Actual Final Balance:   {account.balance}")
-    print("==========================================")
-
-    if account.balance == expected_balance:
-        print("SUCCESS: Thread-safety verified! No race conditions detected.")
-    else:
-        print("FAILURE: Race condition detected!")
+    print("\nSimulation Finished Successfully.")
 
 
 if __name__ == "__main__":
