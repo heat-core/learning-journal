@@ -1,58 +1,80 @@
+import threading
 from core.exceptions import InsufficientFundsError, InvalidAmountError
 from utils.decorators import log_transaction
 
-class BankAccount():
+
+class BankAccount:
     def __init__(self, account_number: str, owner: str, initial_balance: float = 0.0):
         self.account_number = account_number
         self.owner = owner
 
-        if initial_balance < 0 :
+        if initial_balance < 0:
             raise InvalidAmountError("Initial balance cannot be negative.")
         self.__balance = initial_balance
 
+        # تعریف قفل اختصاصی برای هر حساب
+        self._lock = threading.Lock()
+
     @property
     def balance(self) -> float:
-        return self.__balance
+        with self._lock:
+            return self.__balance
 
     @balance.setter
     def balance(self, value: float):
         if value < 0:
             raise InvalidAmountError("Balance cannot be negative.")
-        self.__balance = value
+        with self._lock:
+            self.__balance = value
 
     @log_transaction
     def deposit(self, amount: float) -> float:
         if amount <= 0:
             raise InvalidAmountError("Deposit amount must be greater than zero.")
-        self.__balance += amount
-        return self.__balance
+
+        # قفل‌گذاری هنگام تغییر موجودی (Thread-Safety)
+        with self._lock:
+            self.__balance += amount
+            return self.__balance
 
     @log_transaction
     def withdraw(self, amount: float) -> float:
         if amount <= 0:
             raise InvalidAmountError("Withdrawal amount must be greater than zero.")
-        if amount > self.__balance:
-            raise InsufficientFundsError("Insufficient funds for this withdrawal.")
-        self.__balance -= amount
-        return self.__balance
+
+        # قفل‌گذاری هنگام بررسی و تغییر موجودی
+        with self._lock:
+            if amount > self.__balance:
+                raise InsufficientFundsError("Insufficient funds for this withdrawal.")
+            self.__balance -= amount
+            return self.__balance
 
     def __str__(self) -> str:
         return f"BankAccount(Account: {self.account_number}, Owner: {self.owner}, Balance: {self.__balance})"
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, BankAccount):
             return self.account_number == other.account_number
         return False
 
-    def __add__(self, other):
+    def __add__(self, other) -> float:
         if isinstance(other, BankAccount):
             return self.balance + other.balance
         raise TypeError("Addition is only supported between BankAccount instances.")
 
+    # پشتیبانی از Context Manager (دستور with)
+    def __enter__(self):
+        self._lock.acquire()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._lock.release()
+
+
 class SavingsAccount(BankAccount):
     def __init__(self, account_number: str, owner: str, initial_balance: float = 0.0, interest_rate: float = 0.05):
         super().__init__(account_number, owner, initial_balance)
-        self.interest_rate =interest_rate
+        self.interest_rate = interest_rate
 
     @log_transaction
     def apply_interest(self) -> float:
