@@ -12,8 +12,9 @@ class BankAccount:
             raise InvalidAmountError("Initial balance cannot be negative.")
         self.__balance = initial_balance
 
-        # تعریف قفل اختصاصی برای هر حساب
         self._lock = threading.Lock()
+        self.balance_event = threading.Event()
+        self.target_balance = 5000.0
 
     @property
     def balance(self) -> float:
@@ -32,9 +33,10 @@ class BankAccount:
         if amount <= 0:
             raise InvalidAmountError("Deposit amount must be greater than zero.")
 
-        # قفل‌گذاری هنگام تغییر موجودی (Thread-Safety)
         with self._lock:
             self.__balance += amount
+            if self.__balance >= self.target_balance:
+                self.balance_event.set()
             return self.__balance
 
     @log_transaction
@@ -42,7 +44,6 @@ class BankAccount:
         if amount <= 0:
             raise InvalidAmountError("Withdrawal amount must be greater than zero.")
 
-        # قفل‌گذاری هنگام بررسی و تغییر موجودی
         with self._lock:
             if amount > self.__balance:
                 raise InsufficientFundsError("Insufficient funds for this withdrawal.")
@@ -62,7 +63,6 @@ class BankAccount:
             return self.balance + other.balance
         raise TypeError("Addition is only supported between BankAccount instances.")
 
-    # پشتیبانی از Context Manager (دستور with)
     def __enter__(self):
         self._lock.acquire()
         return self
