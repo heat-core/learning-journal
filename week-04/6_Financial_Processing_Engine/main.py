@@ -1,40 +1,48 @@
-from core.exceptions import InsufficientFundsError, InvalidAmountError
-from core.models import BankAccount, SavingsAccount
+import threading
+from core.models import BankAccount
+
+
+def worker_deposit(account: BankAccount, amount: float, count: int):
+    """تابعی که توسط هر ترد اجرا می‌شود و چندین بار واریز انجام می‌دهد"""
+    for _ in range(count):
+        account.deposit(amount)
 
 
 def main():
-    print("=== 1. Creating Accounts ===")
-    acc1 = BankAccount("101", "Farbod", 1000.0)
-    acc2 = BankAccount("102", "Ali", 500.0)
-    savings = SavingsAccount("103", "Farbod", 2000.0, interest_rate=0.10)
+    print("=== Testing Concurrent Transactions (Thread-Safety) ===")
+    account = BankAccount("101", "Farbod", initial_balance=0.0)
 
-    print("\n=== 2. Testing Transactions & Decorator ===")
-    acc1.deposit(500.0)
-    acc1.withdraw(200.0)
+    threads = []
+    num_threads = 100
+    deposits_per_thread = 10
+    amount_per_deposit = 10.0
 
-    print("\n=== 3. Testing Magic Methods ===")
-    print(f"Account 1 Info: {acc1}")
-    print(f"Is acc1 equal to acc2? {acc1 == acc2}")
+    # ساخت ۱۰۰ ترد هم‌زمان
+    for _ in range(num_threads):
+        t = threading.Thread(
+            target=worker_deposit,
+            args=(account, amount_per_deposit, deposits_per_thread)
+        )
+        threads.append(t)
 
-    # Testing __add__
-    total_balance = acc1 + acc2
-    print(f"Combined Balance of acc1 & acc2: {total_balance}")
+    # شروع کار تردها
+    for t in threads:
+        t.start()
 
-    print("\n=== 4. Testing SavingsAccount Interest ===")
-    savings.apply_interest()
+    # انتظار برای پایان کار تمام تردها
+    for t in threads:
+        t.join()
 
-    print("\n=== 5. Testing Error Handling ===")
-    # Test Invalid Deposit
-    try:
-        acc1.deposit(-50.0)
-    except InvalidAmountError as e:
-        print(f"Caught expected error: {e}")
+    expected_balance = num_threads * deposits_per_thread * amount_per_deposit
+    print("\n==========================================")
+    print(f"Expected Final Balance: {expected_balance}")
+    print(f"Actual Final Balance:   {account.balance}")
+    print("==========================================")
 
-    # Test Insufficient Funds
-    try:
-        acc2.withdraw(5000.0)
-    except InsufficientFundsError as e:
-        print(f"Caught expected error: {e}")
+    if account.balance == expected_balance:
+        print("SUCCESS: Thread-safety verified! No race conditions detected.")
+    else:
+        print("FAILURE: Race condition detected!")
 
 
 if __name__ == "__main__":
