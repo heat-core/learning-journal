@@ -183,7 +183,7 @@ if __name__ == "__main__":
 
     if __name__ == "__main__":
         manager = TaskManager()
-        print("\n\n\n","=== ۱. ساخت اشیاء (Start Manager) ===")
+        print("=== ۱. ساخت اشیاء (Start Manager) ===")
 
         # ساخت چند نمونه تاسک
         t1 = DataProcessingTask(task_id=1, priority=2, data=[10, 20, 30, 40])
