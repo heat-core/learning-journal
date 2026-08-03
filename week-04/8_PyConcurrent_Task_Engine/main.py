@@ -1,3 +1,4 @@
+import threading
 import time
 
 
@@ -100,6 +101,50 @@ class LoggedNetworkTask(Task, LoggerMixin):
         return self.result
 
 
+class TaskManager:
+    def __init__(self):
+        self.tasks = []
+        self.total_processed_count = 0
+        self.lock = threading.Lock()
+        self.start_signal = threading.Event()
+
+    def add_task(self, task: Task):
+        self.tasks.append(task)
+
+    def _worker(self, task: Task):
+        # ۱. منتظر بمان تا سیگنال شلیک شود
+        self.start_signal.wait()
+
+        try:
+            # ۲. اجرای تاسک
+            task()
+            # ۳. به‌روزرسانی منبع مشترک با قفل برای جلوگیری از Race Condition
+            with self.lock:
+                self.total_processed_count += 1
+        except Exception as e:
+            task.status = "FAILED"
+            print(f"[ERROR] Task {task.task_id} failed: {e}")
+
+    def run_all(self):
+        threads = []
+
+        # گام اول: ساخت و استارت زدن همه تردها (همگی منتظر سیگنال می‌مانند)
+        for task in self.tasks:
+            t = threading.Thread(target=self._worker, args=(task,))
+            threads.append(t)
+            t.start()
+
+        print("\n[MANAGER] Starting all threads simultaneously...")
+        # گام دوم: انتشار سیگنال برای شروع هم‌زمان تردها
+        self.start_signal.set()
+
+        # گام سوم: انتظار برای اتمام تمامی تردها
+        for t in threads:
+            t.join()
+
+        print(f"[MANAGER] All tasks executed. Total successful tasks: {self.total_processed_count}\n")
+
+
 # ==========================================
 # بخش تست و بررسی رفتار کلاس‌ها
 # ==========================================
@@ -135,3 +180,30 @@ if __name__ == "__main__":
     print("\n=== ۶. وضعیت نهایی اشیاء ===")
     print("t1 final state:", t1)
     print("t2 final state:", t2)
+
+    if __name__ == "__main__":
+        manager = TaskManager()
+        print("\n\n\n","=== ۱. ساخت اشیاء (Start Manager) ===")
+
+        # ساخت چند نمونه تاسک
+        t1 = DataProcessingTask(task_id=1, priority=2, data=[10, 20, 30, 40])
+        t2 = LoggedNetworkTask(task_id=2, priority=1, url="https://api.github.com")
+        t3 = DataProcessingTask(task_id=3, priority=3, data=[1, 2, 3])
+        t4 = LoggedNetworkTask(task_id=4, priority=1, url="https://python.org")
+
+        # اضافه کردن به مدیر تاسک‌ها
+        manager.add_task(t1)
+        manager.add_task(t2)
+        manager.add_task(t3)
+        manager.add_task(t4)
+
+        # تست بازرسی پویا روی یکی از تاسک‌ها
+        inspect_task(t2)
+
+        # اجرای هم‌زمان همه تاسک‌ها
+        manager.run_all()
+
+        # چاپ وضعیت نهایی تاسک‌ها
+        print("=== Final Tasks Status ===")
+        for task in manager.tasks:
+            print(task)
