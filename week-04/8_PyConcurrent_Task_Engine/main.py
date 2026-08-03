@@ -1,5 +1,7 @@
 import time
 
+
+# --- فاز ۲: تعریف دکوراتور ---
 def time_logger(func):
     def wrapper(*args, **kwargs):
         start_time = time.time()
@@ -7,21 +9,27 @@ def time_logger(func):
         end_time = time.time()
         print(f"[TIMER] Execution time for {func.__name__}: {end_time - start_time:.4f}s")
         return result
+
     return wrapper
 
-def inspect_task(task_obj):
-    print(f"Task Name: {type(task_obj).__name__}")
-    stat = getattr(task_obj, "status")
-    prio = getattr(task_obj, "priority")
-    print(f"Status: {stat}")
-    print(f"Priority: {prio}")
-    if hasattr(task_obj, "data"):
-        print(f"Data: {task_obj.data}")
-    if hasattr(task_obj, "url"):
-        print(f"URL: {task_obj.url}")
-    public_attrs = [attr for attr in dir(task_obj) if not attr.startswith("__")]
-    print(f"Public Attributes/Methods: {public_attrs}")
 
+# --- فاز ۳: تابع بازرسی پویا (Introspection) ---
+def inspect_task(task_obj):
+    print(f"\n--- Introspection for: {type(task_obj).__name__} ---")
+    print(f"Status (via getattr): {getattr(task_obj, 'status')}")
+    print(f"Priority (via getattr): {getattr(task_obj, 'priority')}")
+
+    if hasattr(task_obj, "data"):
+        print(f"Data attribute: {task_obj.data}")
+    if hasattr(task_obj, "url"):
+        print(f"URL attribute: {task_obj.url}")
+
+    public_attrs = [attr for attr in dir(task_obj) if not attr.startswith("__")]
+    print(f"Public Methods/Attrs: {public_attrs}")
+    print("-" * 45)
+
+
+# --- فاز ۱: استثنا و کلاس پایه ---
 class TaskExecutionError(Exception):
     pass
 
@@ -41,7 +49,7 @@ class Task:
         allowed_statuses = ["PENDING", "RUNNING", "COMPLETED", "FAILED"]
         if value not in allowed_statuses:
             raise TaskExecutionError(f"Invalid status: {value}. Must be one of {allowed_statuses}")
-        self._status = value  # اصلاح شد: به _status مقداردهی می‌کنیم
+        self._status = value
 
     def execute(self):
         raise NotImplementedError("Subclasses must implement execute() method.")
@@ -56,6 +64,7 @@ class Task:
         return self.priority < other.priority
 
 
+# --- کلاس‌های مشتق‌شده ---
 class DataProcessingTask(Task):
     def __init__(self, task_id: int, priority: int = 1, data: list[int] = None):
         super().__init__(task_id, priority)
@@ -89,3 +98,40 @@ class LoggedNetworkTask(Task, LoggerMixin):
         self.result = 200
         self.status = "COMPLETED"
         return self.result
+
+
+# ==========================================
+# بخش تست و بررسی رفتار کلاس‌ها
+# ==========================================
+if __name__ == "__main__":
+    print("=== ۱. ساخت اشیاء (Instances) ===")
+    t1 = DataProcessingTask(task_id=101, priority=2, data=[10, 20, 30])
+    t2 = LoggedNetworkTask(task_id=102, priority=1, url="https://api.example.com")
+
+    print("\n=== ۲. تست Dunder Methods (__str__ & __lt__) ===")
+    # تست __str__: چاپ خوانای شیء
+    print("t1 status:", t1)
+    print("t2 status:", t2)
+    # تست __lt__: مقایسه بر اساس priority (اولویت ۱ کمتر/بالاتر از اولویت ۲)
+    print(f"Is t2 higher priority than t1? (t2 < t1): {t2 < t1}")
+
+    print("\n=== ۳. تست Introspection (قبل از اجرا) ===")
+    inspect_task(t1)
+
+    print("\n=== ۴. تست اجرا با __call__ و Decorator ===")
+    # فراخوانی t1() مستقیماً متد execute() را با دکوراتور time_logger اجرا می‌کند
+    res1 = t1()
+    print(f"DataProcessingTask Result: {res1}")
+
+    res2 = t2()
+    print(f"LoggedNetworkTask Result: {res2}")
+
+    print("\n=== ۵. تست Validation در @status.setter ===")
+    try:
+        t1.status = "INVALID_STATUS"
+    except TaskExecutionError as e:
+        print(f"Caught expected error successfully: {e}")
+
+    print("\n=== ۶. وضعیت نهایی اشیاء ===")
+    print("t1 final state:", t1)
+    print("t2 final state:", t2)
