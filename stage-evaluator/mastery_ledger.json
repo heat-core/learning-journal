@@ -1,0 +1,105 @@
+{
+  "stages": {
+    "stage_0": {
+      "passed": true,
+      "score_pct": 100.0,
+      "passed_tests": 4,
+      "total_tests": 4,
+      "last_evaluated": "2026-10-04T05:30:48.745678",
+      "badge": "Python Systems Specialist"
+    },
+    "stage_1": {
+      "passed": true,
+      "score_pct": 100.0,
+      "passed_tests": 3,
+      "total_tests": 3,
+      "last_evaluated": "2026-10-04T05:30:48.749529",
+      "badge": "Production Backend Engineer"
+    },
+    "stage_2": {
+      "passed": true,
+      "score_pct": 100.0,
+      "passed_tests": 2,
+      "total_tests": 2,
+      "last_evaluated": "2026-10-04T05:30:48.753206",
+      "badge": "Applied ML Practitioner"
+    },
+    "stage_3": {
+      "passed": true,
+      "score_pct": 100.0,
+      "passed_tests": 2,
+      "total_tests": 2,
+      "last_evaluated": "2026-10-04T05:30:48.756893",
+      "badge": "Enterprise RAG Architect"
+    },
+    "stage_4": {
+      "passed": true,
+      "score_pct": 100.0,
+      "passed_tests": 1,
+      "total_tests": 1,
+      "last_evaluated": "2026-10-04T05:30:48.759980",
+      "badge": "Agentic Systems Developer"
+    },
+    "stage_5": {
+      "passed": true,
+      "score_pct": 100.0,
+      "passed_tests": 1,
+      "total_tests": 1,
+      "last_evaluated": "2026-10-04T05:30:48.763569",
+      "badge": "Multimodal Creative AI Specialist"
+    },
+    "stage_6": {
+      "passed": true,
+      "score_pct": 100.0,
+      "passed_tests": 2,
+      "total_tests": 2,
+      "last_evaluated": "2026-10-04T05:30:48.766632",
+      "badge": "AI Systems Reliability Master"
+    }
+  },
+  "history": [
+    {
+      "stage": 0,
+      "timestamp": "2026-10-04T05:30:48.745678",
+      "score_pct": 100.0,
+      "passed": true
+    },
+    {
+      "stage": 1,
+      "timestamp": "2026-10-04T05:30:48.749529",
+      "score_pct": 100.0,
+      "passed": true
+    },
+    {
+      "stage": 2,
+      "timestamp": "2026-10-04T05:30:48.753724",
+      "score_pct": 100.0,
+      "passed": true
+    },
+    {
+      "stage": 3,
+      "timestamp": "2026-10-04T05:30:48.756893",
+      "score_pct": 100.0,
+      "passed": true
+    },
+    {
+      "stage": 4,
+      "timestamp": "2026-10-04T05:30:48.759980",
+      "score_pct": 100.0,
+      "passed": true
+    },
+    {
+      "stage": 5,
+      "timestamp": "2026-10-04T05:30:48.763569",
+      "score_pct": 100.0,
+      "passed": true
+    },
+    {
+      "stage": 6,
+      "timestamp": "2026-10-04T05:30:48.766632",
+      "score_pct": 100.0,
+      "passed": true
+    }
+  ],
+  "last_updated": "2026-10-04T05:30:48.766632"
+}

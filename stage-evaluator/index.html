@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ارزیاب تسلط هوش مصنوعی | AI Mastery Stage Evaluator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-logo">
+          <span class="pulse-dot"></span>
+          ⚡
+        </div>
+        <div class="brand-text">
+          <h1>ارزیاب تسلط مراحل هوش مصنوعی</h1>
+          <p class="subtitle">AI Mastery & Proof Verification Engine • ۲۴ ماهه</p>
+        </div>
+      </div>
+
+      <div class="header-stats">
+        <div class="stat-pill">
+          <span class="stat-label">پیشرفت کل نقشه راه:</span>
+          <div class="progress-bar-sm">
+            <div id="global-progress-bar" class="progress-fill" style="width: 0%"></div>
+          </div>
+          <span id="global-progress-text" class="stat-val">0%</span>
+        </div>
+
+        <button id="btn-export-proof" class="btn-action">
+          <span>📜</span> صدور گزارش گواه تسلط (Proof)
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+      <!-- Sidebar / Stage Selector -->
+      <aside class="stages-sidebar">
+        <h3 class="sidebar-title">مراحل ارزیابی (Stages)</h3>
+        <nav id="stages-nav" class="stages-nav">
+          <!-- Dynamically generated stage cards -->
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="rig-specs">
+            <span class="rig-icon">🖥️</span>
+            <div>
+              <strong>زیرساخت پردازشی فعال</strong>
+              <small>i9-14900KF • RTX 3090 24GB</small>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="stage-content">
+        <!-- Stage Hero Banner -->
+        <div class="stage-hero">
+          <div class="hero-header">
+            <div class="hero-meta">
+              <span id="stage-badge-tag" class="hero-tag">Stage 0</span>
+              <span id="stage-gate-tag" class="hero-gate">Gate 0 (Day 7)</span>
+            </div>
+            <h2 id="stage-title">عنوان مرحله</h2>
+            <p id="stage-description" class="hero-desc">توضیحات هدف مرحله</p>
+          </div>
+          <div class="hero-score-card">
+            <div class="score-circle">
+              <span id="stage-score-val">0%</span>
+              <small>امتیاز تسلط</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage Tabs -->
+        <div class="tabs-nav">
+          <button class="tab-btn active" data-tab="quiz">
+            <span>📝</span> آزمون تحلیلی و تستی
+          </button>
+          <button class="tab-btn" data-tab="challenges">
+            <span>💻</span> چالش‌های عملی کدنویسی
+          </button>
+          <button class="tab-btn" data-tab="checklist">
+            <span>✅</span> چک‌لیست شواهد و گواه (Evidence)
+          </button>
+          <button class="tab-btn" data-tab="certificate">
+            <span>🏆</span> نشان و کارنامه رسمی
+          </button>
+        </div>
+
+        <!-- Tab 1: Quiz -->
+        <section id="tab-quiz" class="tab-panel active">
+          <div class="panel-header">
+            <div>
+              <h3>آزمون مفهومی و اعتبارسنجی مهندسی</h3>
+              <p>سناریوهای واقعی، تصمیم‌گیری‌های معماری و تست شناخت تله‌های کدنویسی</p>
+            </div>
+            <div class="quiz-controls">
+              <span id="quiz-progress-label">۰ / ۰ پاسخ داده شده</span>
+              <button id="btn-submit-quiz" class="btn-primary">ثبت و تصحیح آزمون</button>
+            </div>
+          </div>
+
+          <div id="quiz-container" class="quiz-list">
+            <!-- Dynamically injected questions -->
+          </div>
+        </section>
+
+        <!-- Tab 2: Challenges -->
+        <section id="tab-challenges" class="tab-panel">
+          <div class="panel-header">
+            <div>
+              <h3>چالش‌های کدنویسی و تست‌های خودکار</h3>
+              <p>توابع و کلاس‌های این بخش با اجرای فایل <code>evaluator.py</code> در ترمینال یا دکمه زیر تست می‌شوند.</p>
+            </div>
+            <button id="btn-run-all-cli" class="btn-primary">
+              <span>▶️</span> اجرای شبیه‌ساز تست پایتون
+            </button>
+          </div>
+
+          <div id="challenges-container" class="challenges-list">
+            <!-- Dynamically injected challenges -->
+          </div>
+        </section>
+
+        <!-- Tab 3: Evidence Checklist -->
+        <section id="tab-checklist" class="tab-panel">
+          <div class="panel-header">
+            <div>
+              <h3>چک‌لیست شواهد مهندسی (Proof of Mastery)</h3>
+              <p>برای تایید این مرحله، موارد زیر را در مخزن خود بسازید و علامت بزنید:</p>
+            </div>
+            <button id="btn-save-checklist" class="btn-secondary">ذخیره شواهد</button>
+          </div>
+
+          <div id="checklist-container" class="checklist-grid">
+            <!-- Dynamically injected checklist items -->
+          </div>
+        </section>
+
+        <!-- Tab 4: Certificate & Badge -->
+        <section id="tab-certificate" class="tab-panel">
+          <div class="certificate-wrapper">
+            <div id="certificate-card" class="cert-card">
+              <div class="cert-glow"></div>
+              <div class="cert-header">
+                <span class="cert-watermark">VERIFIED AI MASTERY</span>
+                <div class="cert-seal">🎖️</div>
+                <h4 class="cert-org">JOURNAL OF ARTIFICIAL INTELLIGENCE ENGINEERING</h4>
+                <p class="cert-sub">گواهینامه اعتبارسنجی و شواهد تسلط مرحله‌ای</p>
+              </div>
+
+              <div class="cert-body">
+                <p class="cert-declare">بدین‌وسیله تایید می‌شود که با بررسی شواهد کدنویسی و پروژه‌ها:</p>
+                <h2 id="cert-user-name" class="cert-name">Farbod Jolani</h2>
+                <p class="cert-desc">موفق به کسب نشان و صلاحیت تخصصی زیر گردیده است:</p>
+                <div id="cert-badge-title" class="cert-badge-box">Python Systems Specialist</div>
+                <div class="cert-details">
+                  <div><strong>مرحله:</strong> <span id="cert-stage-name">-</span></div>
+                  <div><strong>دروازه تاییدشده:</strong> <span id="cert-gate-name">-</span></div>
+                  <div><strong>نمره اعتبارسنجی:</strong> <span id="cert-score-pct">100%</span></div>
+                  <div><strong>شناسه تصدیق:</strong> <code id="cert-hash">SHA256-PENDING</code></div>
+                </div>
+              </div>
+
+              <div class="cert-footer">
+                <div class="sig-block">
+                  <div class="sig-line"></div>
+                  <span>موتور ارزیابی Stage-Evaluator</span>
+                </div>
+                <div class="sig-block">
+                  <div class="sig-line"></div>
+                  <span id="cert-date">-</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="cert-actions">
+              <button id="btn-download-cert" class="btn-primary">
+                <span>📥</span> دانلود سند گواهینامه (Markdown Report)
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
